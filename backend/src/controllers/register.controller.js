@@ -21,12 +21,12 @@ export const login = async (req, res, next) => {
   try {
     const { token, user } = await loginUser(req.body);
 
-    res.cookie("accessToken", token, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
-    //   path: "/",
+      path: "/",
     });
 
     return res.status(200).json({
@@ -37,4 +37,18 @@ export const login = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+// logout controller
+export const logoutUser = async (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
 };
